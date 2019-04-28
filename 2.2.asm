@@ -41,7 +41,7 @@ DISP_MSG        MACRO   MSG
         MOV     DX,OFFSET MSG
         MOV     AH,9
         INT     21H
-ENDM
+        ENDM
 
 
 GET_STR MACRO   STR
