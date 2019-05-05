@@ -1,0 +1,158 @@
+STACK   SEGMENT PARA    STACK
+STACK_AREA  DW              100h DUP(?)
+STACK_TOP   EQU             $-STACK_AREA
+STACK   ENDS
+
+
+DATA    SEGMENT PARA
+	LEN     EQU     128
+	MSG1    DB      'Input string:',0DH,0AH,'$'
+	MSG2    DB      'Word list before insert:',0DH,0AH,'$'
+	MSG3    DB      'Word list after insert:',0DH,0AH,'$'
+	NEW_LINE    DB      0DH,0AH,'$'
+	WORDS   DB      'above',00H,'zebra',00H,'$'
+	WORDS_2 DB      LEN DUP(0)
+	STR1    DB      LEN-1
+			DB      0
+			DB      LEN DUP(0)
+DATA    ENDS
+
+CODE    SEGMENT PARA
+		ASSUME  CS:CODE,DS:DATA,SS:STACK
+
+DISP	MACRO	MSG
+		PUSH  	DX
+		PUSH 	AX
+
+		MOV     DX,OFFSET MSG
+		MOV     AH,9
+		INT     21H
+
+		POP 	AX
+		POP	 	DX
+ENDM
+
+
+GETS MACRO   STR
+		MOV     DX,OFFSET STR
+		MOV     AH,0AH
+		INT     21H
+
+		MOV     CL,STR+1 ;输入时改为以00H结尾
+		XOR     CH,CH
+		MOV     DI,OFFSET STR+2
+		ADD     DI,CX
+		CLD
+		XOR     AL,AL
+		STOSB
+ENDM
+
+
+STRCMP  PROC
+		PUSH    SI
+		PUSH	DI
+		CLD
+CMP_NEXT:
+		CMPSB
+		JNZ     CMP_RET
+		CMP     BYTE PTR [SI-1],0
+		JZ      CMP_RET
+		JMP     CMP_NEXT
+CMP_RET:
+		POP		DI
+		POP     SI
+		RET
+STRCMP    ENDP
+
+
+SHIFT	PROC
+		PUSH	DI
+		PUSH	SI
+		PUSH	CX
+		PUSH	BX
+
+		MOV		BX,DI
+		MOV		SI,OFFSET WORDS_2
+		DEC     SI
+		MOV		DI,SI
+		ADD		DI,CX
+		
+		STD
+	LP1:
+		MOVSB
+		CMP		SI,BX
+		JAE		LP1
+
+		POP		BX
+		POP		CX
+		POP     SI
+		POP		DI
+
+		RET
+SHIFT	ENDP
+
+
+INSERT  PROC
+		PUSH	SI
+		PUSH	DI
+
+
+		CALL	STRCMP
+		JB		LS
+	
+	LP2: 
+		INC		DI
+		CMP		BYTE PTR [DI-1],0
+		JNZ		LP2
+
+		CALL	STRCMP
+		JB		LS
+	
+	LP3:
+		INC		DI
+		CMP		BYTE PTR [DI-1],0
+		JNZ		LP3
+
+LS:
+		CALL	SHIFT
+		CLD
+		REP		MOVSB
+
+		POP		DI
+		POP     SI
+		RET
+INSERT	ENDP
+
+
+MAIN    PROC    FAR
+		MOV     AX,DATA
+		MOV     DS,AX
+		MOV     ES,AX
+
+		DISP    MSG2
+		DISP    WORDS
+		DISP    NEW_LINE
+
+		DISP    MSG1
+		GETS    STR1
+		DISP    NEW_LINE
+
+		MOV		CL,STR1+1
+		XOR		CH,CH
+		INC		CX
+		MOV     SI,OFFSET STR1+2
+		MOV     DI,OFFSET WORDS
+
+		CALL    INSERT
+
+		DISP    MSG3
+		DISP    WORDS
+		DISP    NEW_LINE
+
+EXIT:
+		MOV     AX,4C00H
+		INT     21H
+MAIN    ENDP
+
+CODE    ENDS
+		END     MAIN
