@@ -9,7 +9,7 @@ DATA    SEGMENT PARA
 	MSG1    DB      'Input string:',0DH,0AH,'$'
 	MSG2    DB      'Word list before insert:',0DH,0AH,'$'
 	MSG3    DB      'Word list after insert:',0DH,0AH,'$'
-	NEW_LINE    DB      0DH,0AH,'$'
+	NEW_LINE	DB	0DH,0AH,'$'
 	WORDS   DB      'above',00H,'zebra',00H,'$'
 	WORDS_2 DB      LEN DUP(0)
 	STR1    DB      LEN-1
