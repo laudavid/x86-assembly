@@ -5,7 +5,7 @@ STACK	ENDS
 
 DATA	SEGMENT	PARA
 	S1				DB	'Hail Hydra! Hail Hydra!',00H,'$'
-	CHAR			DB	'l'
+	CHAR			DB	'C'
 	MSG_IN			DB	' in ','$'
 	MSG_NOT_FOUND	DB	'Not found ','$'
 	NEW_LINE 		DB	0DH,0AH,'$'

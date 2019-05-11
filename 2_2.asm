@@ -41,7 +41,7 @@ DISP_MSG        MACRO   MSG
         MOV     DX,OFFSET MSG
         MOV     AH,9
         INT     21H
-        ENDM
+ENDM
 
 
 GET_STR MACRO   STR
@@ -130,23 +130,26 @@ STRCMP    ENDP
 
 P1  PROC
         CALL STRCMP
-        PUT_STR    STR1
         JB      LAB1
         JZ      LAB2
         JA      LAB3
-LAB1:
-        
+LAB1:   
+        PUT_STR    STR1
         DISP_MSG    MSG4
+        PUT_STR    STR2
         JMP     P1_RET
 LAB2:   
+        PUT_STR    STR1
         DISP_MSG    MSG5
+        PUT_STR    STR2
         JMP     P1_RET
 LAB3:   
+        PUT_STR    STR1
         DISP_MSG    MSG6
+        PUT_STR    STR2
         ;JMP     P1_RET
 
 P1_RET: 
-        PUT_STR    STR2
         RET
 P1      ENDP
 
